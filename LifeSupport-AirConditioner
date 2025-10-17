@@ -1,0 +1,64 @@
+define MaxPressure 100000
+define DesiredPressure 75000
+define MinimumOxygenPressure 25000
+define DesiredOxygenRatio 0.25
+define None 0
+define Oxygen 1
+define Nitrogen 2
+alias AirConditioner db
+alias OxygenValve d0
+alias NitrogenValve d1
+alias temp r0
+alias currentPressure r1
+alias oxygenRatio r2
+alias nitrogenRatio r3
+alias actualOxygenPressure r4
+alias needOxygen r5
+alias needNitrogen r6
+alias addAir r7
+alias maxAir r8
+alias fineAir r9
+
+j stopAir
+
+main:
+yield
+
+l currentPressure AirConditioner PressureOutput
+l oxygenRatio AirConditioner RatioOxygenOutput
+l nitrogenRatio AirConditioner RatioNitrogenOutput
+mul actualOxygenPressure currentPressure oxygenRatio
+jal checkOxygen
+jal checkPressure
+
+beqal needOxygen 1 addOxygen
+beqal needNitrogen 1 addNitrogen
+beqal fineAir 1 stopAir
+beqal maxAir 1 loseAir
+j main
+
+checkOxygen:
+sle needOxygen actualOxygenPressure MinimumOxygenPressure
+beq needOxygen 1 ra
+sle needOxygen oxygenRatio DesiredOxygenRatio
+j ra
+checkPressure:
+sle addAir currentPressure DesiredPressure
+beq addAir needOxygen ra
+move needNitrogen addAir
+sge fineAir currentPressure DesiredPressure
+sge maxAir currentPressure MaxPressure
+
+j ra
+addOxygen:
+s OxygenValve On 1
+j ra
+addNitrogen:
+s NitrogenValve On 1
+j ra
+stopAir:
+s OxygenValve On 0
+s NitrogenValve On 0
+j main
+loseAir:
+j main
