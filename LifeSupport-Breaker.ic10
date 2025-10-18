@@ -2,12 +2,17 @@ alias BreakerLever d0
 alias BreakerLed d1
 alias AtmoIntake d2
 alias AtmoExhaustValve d3
-alias temp r0 
-alias BreakerState r1 
-alias BreakerLedColor r2 
+alias Sensor d4   
+alias Display d5 
+alias temp r0
+alias BreakerState r1
+alias BreakerLedColor r2
 alias isRed r3
 alias FiltrationModeSum r4
 alias FiltrationActiveSum r5
+alias TotalPressure r6
+alias OxygenRatio r7
+alias OxygenPartialPressure r8
 
 
 define FiltrationHash -348054045
@@ -18,13 +23,13 @@ define Blue 0
 define Green 2
 define BreakerOpen 1
 define BreakerClosed 0
-define MaxAtmoPipePressure 500
+define MaxAtmoPipePressure 5000
 
 jal ColorBrown
 move temp 1 #AtmoIntake Mode is Inward
-s AtmoIntake Mode temp #AtmoIntake PressureExternal is 1kPa
+s AtmoIntake Mode temp 
 s AtmoIntake PressureExternal temp
-move temp MaxAtmoPipePressure #AtmoIntake PressureInternal is 3MPa
+move temp MaxAtmoPipePressure 
 s AtmoIntake PressureInternal temp
 yield
 s BreakerLever Open BreakerOpen
@@ -32,13 +37,15 @@ j TurnOff
 
 main:
 yield
+jal checkOxygen
+
 l BreakerState BreakerLever Open
 l BreakerLedColor BreakerLed Color
 
 seq isRed BreakerLedColor Red
 
 #Breaker is open and the light is NOT red
-breq BreakerState BreakerClosed 4  
+breq BreakerState BreakerClosed 4
 beq isRed 0 TurnOff
 #Breaker is open and the light is red
 j main
@@ -47,7 +54,7 @@ beq isRed 1 TurnOn
 #Breaker is closed and the light is NOT red
 beq isRed 0 CheckStatus
 
-j main 
+j main
 
 TurnOn:
 jal ColorYellow
@@ -91,4 +98,10 @@ j ra
 ColorYellow:
 move BreakerLedColor Yellow
 s BreakerLed Color BreakerLedColor
+j ra
+checkOxygen:
+l TotalPressure Sensor Pressure
+l OxygenRatio Sensor Oxygen
+mul OxygenPartialPressure TotalPressure OxygenRatio 
+s Display Setting OxygenPartialPressure
 j ra
