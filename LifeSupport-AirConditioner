@@ -2,6 +2,7 @@ define MaxPressure 100000
 define DesiredPressure 75000
 define MinimumOxygenPressure 25000
 define DesiredOxygenRatio 0.25
+define MaxOxygenRatio 0.40
 define None 0
 define Oxygen 1
 define Nitrogen 2
@@ -40,6 +41,8 @@ j main
 checkOxygen:
 sle needOxygen actualOxygenPressure MinimumOxygenPressure
 beq needOxygen 1 ra
+sge needOxygen oxygenRatio MaxOxygenRatio
+beq needOxygen 0 ra
 sle needOxygen oxygenRatio DesiredOxygenRatio
 j ra
 checkPressure:
