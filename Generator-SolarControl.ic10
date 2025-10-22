@@ -3,6 +3,8 @@ alias sensor d0
 alias angle_v r0
 alias angle_h r1
 alias corr_angle r2
+alias lightDetected r3
+alias growLightState r4
 
 #define directions of sensor and panel power ports
 define sensor_data_angle 180
@@ -11,8 +13,9 @@ define panel_power_angle 0
 #define panel hashes
 define basic_1_panel -2045627372 # This is the flat solar panel
 define basic_2_panel -539224550 # This is the standard solar panel kit
-define heavy_1_panel -934345724
-define heavy_2_panel -1545574413
+define heavy_1_panel -934345724 #  
+define heavy_2_panel -1545574413 # 
+define growLight -1758710260 # Grow Light 
 
 #calculate horizontal correction
 sub corr_angle sensor_data_angle panel_power_angle
@@ -34,5 +37,11 @@ sb basic_2_panel Vertical angle_v
 sb basic_2_panel Horizontal angle_h
 #sb heavy_1_panel Horizontal angle_h
 #sb heavy_2_panel Horizontal angle_h
+
+l lightDetected sensor Activate
+lb growLightState growLight On Minimum
+ 
+breq growLightState lightDetected 2
+sb growLight On lightDetected
 
 j start
