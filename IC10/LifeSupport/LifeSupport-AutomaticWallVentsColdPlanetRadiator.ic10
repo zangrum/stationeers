@@ -1,0 +1,59 @@
+alias acColdActiveVent d0
+alias acColdValve d1
+alias acHotIntake d2
+alias acHotExhaust d3
+alias gasSensor d4
+alias acLed d5
+define MinimumTemp 22
+define MaximumTemp 27
+define DesiredTemp 25
+define ColorCooling 0
+define ColorHeating 4
+define ColorWeGood 2
+define ColorStopHeating 5
+define ColorDiscovering 8
+alias temperature r0
+
+s acColdActiveVent On 0
+s acColdValve On 0
+s acHotIntake On 0
+s acHotExhaust On 0
+s acLed Color ColorDiscovering
+
+Main:
+yield
+l temperature gasSensor Temperature
+beq temperature DesiredTemp WeGood
+blt temperature MinimumTemp HeatUp
+bgt temperature MaximumTemp CoolDown
+bge temperature MinimumTemp StopHeating
+
+j Main
+WeGood:
+s acColdActiveVent On 0
+s acColdValve On 0
+s acHotIntake On 0
+s acHotExhaust On 0
+s acLed Color ColorWeGood
+j Main
+CoolDown:
+s acColdActiveVent On 1
+s acColdValve On 1
+s acHotIntake On 0
+s acHotExhaust On 0
+s acLed Color ColorCooling
+j Main
+HeatUp:
+s acColdActiveVent On 0
+s acColdValve On 0
+s acHotIntake On 1
+s acHotExhaust On 0
+s acLed Color ColorHeating
+j Main
+StopHeating:
+s acColdActiveVent On 0
+s acColdValve On 0
+s acHotIntake On 0
+s acHotExhaust On 1
+s acLed Color ColorStopHeating
+j Main

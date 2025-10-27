@@ -1,0 +1,116 @@
+alias sign d0
+alias dial d1
+alias roomTempValve d2
+alias regulator d3
+alias pressureLED d4
+alias temperatureLED d5
+alias timer r0
+alias lightState r1
+alias mode r3
+alias tankTemperature r4
+alias tankPressure r5
+alias roomTemperature r6
+alias roomPressure r7
+alias daylight r8
+alias min r9
+alias max r10
+alias ventOn r12
+alias regOn r13
+define tankSignName $54414E4B
+define roomSignName $524F4F4D
+define loadSignName $4C4F4144
+define errorSignName $4552524F52
+define tank 272136332 #
+define daylightSensor 1076425094
+define gasSensor -1252983604
+define wallLight -1860064656
+define activeVent -1129453144
+define roomPressureStandard 200
+s dial Mode 2
+s dial Setting 0
+sb activeVent Mode 0#Outword Mode
+sb activeVent PressureInternal roomPressureStandard
+sb activeVent PressureExternal 50000# MaxPressr out
+sb activeVent On 1
+s regulator Setting roomPressureStandard
+s regulator On 1
+s sign Mode 10
+s sign Setting loadSignName
+s sign On 1
+s temperatureLED Mode 3
+s temperatureLED On 1
+s pressureLED Mode 14
+s pressureLED On 1
+s roomTempValve On 0
+Main:
+    yield
+    add timer timer 1#Timer Increment
+    brlt timer 10 2  #Timer Reset
+    move timer 0     #Timer Reset
+    jal CheckLights
+    jal CheckRoomPressure
+    jal CheckRoomTemp
+    l mode dial Setting#Set Sign, then main
+    beq mode 0 Alternate
+    beq mode 1 Room
+    beq mode 2 Tank
+    s sign Setting errorSignName#Sign failed to set
+CheckLights:
+    lb daylight daylightSensor Activate Maximum
+    beq daylight 0 LightsOn
+    beq daylight 1 LightsOff
+    sb wallLight On 0
+j ra
+LightsOn:
+    lb lightState wallLight On Minimum
+    beq lightState 1 ra
+    sb wallLight On 1
+j ra
+LightsOff:
+    lb lightState wallLight On Maximum
+    beq lightState 0 ra
+    sb wallLight On 0
+j ra
+CheckRoomTemp:
+    lb roomTemperature gasSensor Temperature Minimum
+    lb tankTemperature tank Temperature Minimum
+    sub min tankTemperature 100
+    add max tankTemperature 100
+    brgt roomTemperature max 5 #Turn Off
+        brlt roomTemperature min 2 #Turn On
+            j ra #Room is lt max and gt min
+            s roomTempValve On 1
+            j ra
+        s roomTempValve On 0
+        j ra
+j ra
+CheckRoomPressure:#CRP
+    lb roomPressure gasSensor Pressure Minimum
+    lb ventOn activeVent On Minimum
+    #If Room Pressure is Not Good Skip turn off
+    brne roomPressure roomPressureStandard 5
+        brne ventOn 0 3 # Vent is Off Skip
+            sb activeVent On 0 #Turn vent off
+            s regulator On 0 #Turn reg off
+    j ra # Leave Room pressure is good
+#Room Pressure is not correct
+    sb activeVent On 1 #Turn vent on
+    s regulator On 1 #Turn vent on
+j ra
+Alternate:
+    ble timer 4 Room
+    bgt timer 4 Tank
+Room:
+    s sign Setting roomSignName
+    lb roomPressure gasSensor Pressure Minimum
+    lb roomTemperature gasSensor Temperature Minimum
+    s temperatureLED Setting tankTemperature
+    s pressureLED Setting tankPressure
+j Main
+Tank:
+    s sign Setting tankSignName
+    lb tankPressure tank Pressure Minimum
+    lb tankTemperature tank Temperature Minimum
+    s temperatureLED Setting tankTemperature
+    s pressureLED Setting tankPressure
+j Main

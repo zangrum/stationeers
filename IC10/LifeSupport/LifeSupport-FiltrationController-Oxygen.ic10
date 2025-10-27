@@ -1,0 +1,69 @@
+define MaxPressure 40000
+define DesiredTemp 270
+define FlashingLight -1535893860
+define Tank 272136332 #
+define Pumps -321403609 # 
+define Heater -419758574 # 
+alias unit db
+alias moleSign d0
+alias temp r0
+alias filterQuantity r1
+alias OutputPressure r2
+alias gasPresent r3
+alias moles r4
+s moleSign Mode 13
+s moleSign On 11
+Main:
+yield
+# Update Sign
+lb  moles Tank TotalMoles Maximum
+s moleSign Setting moles 
+# Check Filters
+move filterQuantity 0
+ls temp unit 0 Occupied 
+breq temp 0 3
+ls temp unit 0 Quantity 
+add filterQuantity filterQuantity temp
+ls temp unit 1 Occupied 
+breq temp 1 3
+ls temp unit 1 Quantity 
+add filterQuantity filterQuantity temp
+beq filterQuantity 0 NoFilter
+bltal filterQuantity 0.2 NeedFilter
+bgtal filterQuantity 0.9 FullFilter
+jal CheckInputGas
+jal CheckTemperature
+lb OutputPressure Tank Pressure Maximum
+blt OutputPressure MaxPressure Active
+bge OutputPressure MaxPressure Inactive
+j Main
+CheckInputGas:
+l gasPresent unit RatioOxygenInput
+brgt gasPresent 0 2 #There is gas skip next line
+j Inactive
+j ra
+Inactive:
+s unit Mode 0
+sb Pumps On 0
+j Main
+Active:
+s unit Mode 1
+sb Pumps On 1
+j Main
+NoFilter:
+sb FlashingLight On 1
+j Inactive
+NeedFilter:
+sb FlashingLight On 1
+j ra
+FullFilter:
+sb FlashingLight On 0
+j ra
+CheckTemperature:
+lb temp Tank Temperature Maximum
+sgt temp DesiredTemp temp
+breq temp 1 3 #Temp > desired temp , Skip to Off
+sb Heater On 1
+j ra
+sb Heater On 0
+j ra

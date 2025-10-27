@@ -35,10 +35,10 @@ l OutputPressure unit PressureOutput
 ble OutputPressure MaxPressure Active
 bge OutputPressure MaxPressure Inactive
 
-hcf
+j main
 
 checkInputGas:
-l gasPresent unit RatioPollutantInput 
+l gasPresent unit RatioNitrogenInput 
 brgt gasPresent 0 2 #There is gas skip next line
 j Inactive
 j ra
