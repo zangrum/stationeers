@@ -20,6 +20,8 @@
 - [Make life better](Make-life-better.md)
 - [Advanced Furnace](Advanced-Furnace.md)
 - [Basic AC & Filtering](Basic-AC-and-Filtering.md)
+- [Atmospherics](Atmospherics.md)
+- [Base Air Mix](BaseAirMix.md)
 
 
 ### Starter Greenhouse

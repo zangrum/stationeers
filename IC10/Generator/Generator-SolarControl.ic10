@@ -15,7 +15,6 @@ define basic_1_panel -2045627372 # This is the flat solar panel
 define basic_2_panel -539224550 # This is the standard solar panel kit
 define heavy_1_panel -934345724 #  
 define heavy_2_panel -1545574413 # 
-define growLight -1758710260 # Grow Light 
 
 #calculate horizontal correction
 sub corr_angle sensor_data_angle panel_power_angle

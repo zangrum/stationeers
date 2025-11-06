@@ -101,7 +101,7 @@ s BreakerLed Color BreakerLedColor
 j ra
 checkOxygen:
 l TotalPressure Sensor Pressure
-l OxygenRatio Sensor Oxygen
+l OxygenRatio Sensor OxygenRatio
 mul OxygenPartialPressure TotalPressure OxygenRatio 
 s Display Setting OxygenPartialPressure
 j ra

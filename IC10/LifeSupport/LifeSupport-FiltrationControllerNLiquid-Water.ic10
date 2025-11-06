@@ -4,8 +4,10 @@ define FlashingLight -1535893860
 define Tank 272136332 #
 define Pumps -321403609 # 
 define Heater -419758574 # 
+define LiquidTank 608607718 #
 alias unit db
 alias moleSign d0
+alias liquidMoleSign d1
 alias tankTemp r0
 alias filterQuantity r1
 alias OutputPressure r2
@@ -14,13 +16,19 @@ alias moles r4
 alias filterSlotOccupied r5
 alias filterSlotQuantity r6
 alias tankPressure r7
+
 s moleSign Mode 13
 s moleSign On 11
+s liquidMoleSign Mode 13
+s liquidMoleSign On 11
+
 Main:
 yield
 # Update Sign
 lb  moles Tank TotalMoles Maximum
 s moleSign Setting moles 
+lb  moles LiquidTank TotalMoles Maximum
+s liquidMoleSign Setting moles 
 
 jal CheckFilters
 jal CheckTemperature
@@ -29,7 +37,7 @@ j CheckPressure
 
 j Main
 CheckInputGas:
-l gasPresent unit RatioCarbonDioxideInput
+l gasPresent unit RatioWaterInput
 brgt gasPresent 0 2 #There is gas skip next line
 j Inactive
 j ra

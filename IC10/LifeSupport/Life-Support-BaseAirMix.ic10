@@ -1,0 +1,81 @@
+# Base Air Mix
+alias Oxygen d0
+alias Nitrogen d1
+alias CarbonDioxide d2
+alias Waste d3
+alias Sensor d4
+alias gasRatio r0
+alias polluted r1
+alias pressureNeeded r2
+alias nitrogenNeeded r3
+alias activateNitrogen r4
+alias activateOxygen r5
+alias activateCarbonDioxide r6
+alias activateExhaust r7
+alias pressureActual r8
+alias oxyPartialPressure r9
+alias oxyPartialBelow r10
+alias oxyRatioBelow r11
+define MinimumPressure 52
+define MaximumPressure 58
+define DesiredPressure 55
+
+
+s Waste Mode 1
+s Waste PressureExternal MinimumPressure
+s Waste PressureInternal 50000
+s Waste On 1
+s CarbonDioxide Mode 0
+s CarbonDioxide PressureExternal MaximumPressure
+s CarbonDioxide PressureInternal 0
+s Oxygen Mode 0
+s Oxygen PressureExternal MaximumPressure
+s Oxygen PressureInternal 0
+s Nitrogen Mode 0
+s Nitrogen PressureExternal DesiredPressure
+s Nitrogen PressureInternal 0
+
+Main:
+yield
+l pressureActual Sensor Pressure
+jal CheckOxygen
+jal CheckCarbonDioxide
+jal CheckNitrogen
+jal CheckPollution
+jal CheckPressure
+or activateNitrogen pressureNeeded nitrogenNeeded
+or activateNitrogen activateNitrogen polluted
+s Nitrogen On activateNitrogen
+s Oxygen On activateOxygen
+s CarbonDioxide On activateCarbonDioxide
+s Waste On activateExhaust
+j Main
+
+CheckOxygen:
+l gasRatio Sensor RatioOxygen
+mul oxyPartialPressure gasRatio pressureActual
+slt oxyPartialBelow oxyPartialPressure 2500
+slt oxyRatioBelow gasRatio 0.25 
+or activateOxygen oxyPartialBelow oxyRatioBelow
+j ra
+CheckCarbonDioxide:
+l gasRatio Sensor RatioCarbonDioxide
+slt activateCarbonDioxide gasRatio 0.05
+j ra
+CheckNitrogen:
+l gasRatio Sensor RatioNitrogen
+slt nitrogenNeeded gasRatio 0.65 
+j ra
+CheckPollution:
+move polluted 0
+l gasRatio Sensor RatioPollutant
+add polluted gasRatio polluted
+l gasRatio Sensor RatioVolatiles
+add polluted gasRatio polluted
+sgt polluted polluted 0
+j ra
+CheckPressure:
+l gasRatio Sensor Pressure
+slt pressureNeeded gasRatio MinimumPressure
+sgt activateExhaust gasRatio MaximumPressure
+j ra

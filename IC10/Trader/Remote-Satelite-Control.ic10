@@ -1,0 +1,59 @@
+alias vertDial d0
+alias vertLED d1
+alias horzDial d2
+alias horzLED d3
+alias powerDial d4
+alias powerLED d5
+alias vertical r0
+alias horizontal r1
+alias verticalWant r2
+alias horizontalWant r3
+alias movingVert r4
+alias movingHorz r5
+alias moving r6
+alias power r7
+alias powerWant r8
+define Satellite 439026183
+define LED 1944485013 #LED
+
+s vertLED On 1
+s vertLED Mode 0
+s horzLED On 1
+s horzLED Mode 0
+s powerLED On 1
+s powerLED Mode 0
+s vertDial Mode 90
+s vertDial Setting 45
+s horzDial Mode 360
+s horzDial Setting 180
+s powerDial Mode 50
+s powerDial Setting 2500
+
+Main:
+yield
+lb vertical Satellite Vertical Maximum
+s vertLED Setting vertical
+lb horizontal Satellite Horizontal Maximum
+s horzLED Setting horizontal
+lb power Satellite Setting Maximum
+s powerLED Setting power
+
+l verticalWant vertDial Setting
+l horizontalWant horzDial Setting
+sb Satellite Vertical verticalWant
+sb Satellite Horizontal horizontalWant
+l powerWant powerDial Setting
+mul powerWant powerWant 100
+sb Satellite Setting powerWant
+
+sne movingHorz horizontal horizontalWant
+sne movingVert vertical verticalWant
+or moving movingHorz movingVert
+breq moving 0 3
+sb LED Color 2 # Not Moving
+j Main
+sb LED Color 4 # Moving
+j Main
+j Main
+
+

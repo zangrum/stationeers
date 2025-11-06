@@ -1,9 +1,8 @@
-alias sign d0
-alias dial d1
+alias modeSign d0
+alias modeDial d1
 alias roomTempValve d2
-alias regulator d3
-alias pressureLED d4
-alias temperatureLED d5
+alias pressLED d3
+alias tempLED d4
 alias timer r0
 alias lightState r1
 alias mode r3
@@ -14,7 +13,6 @@ alias roomPressure r7
 alias daylight r8
 alias min r9
 alias max r10
-alias ventOn r12
 alias regOn r13
 define tankSignName $54414E4B
 define roomSignName $524F4F4D
@@ -24,24 +22,15 @@ define tank 272136332 #
 define daylightSensor 1076425094
 define gasSensor -1252983604
 define wallLight -1860064656
-define activeVent -1129453144
-define roomPressureStandard 200
-define roomPressureMax 300
-s dial Mode 2
-s dial Setting 0
-sb activeVent Mode 0#Outword Mode
-sb activeVent PressureInternal roomPressureMax
-sb activeVent PressureExternal 50000# MaxPressr out
-sb activeVent On 1
-s regulator Setting roomPressureStandard
-s regulator On 1
-s sign Mode 10
-s sign Setting loadSignName
-s sign On 1
-s temperatureLED Mode 3
-s temperatureLED On 1
-s pressureLED Mode 14
-s pressureLED On 1
+s modeDial Mode 2
+s modeDial Setting 0
+s modeSign Mode 10
+s modeSign Setting loadSignName
+s modeSign On 1
+s tempLED Mode 3
+s tempLED On 1
+s pressLED Mode 14
+s pressLED On 1
 s roomTempValve On 0
 Main:
     yield
@@ -49,13 +38,12 @@ Main:
     brlt timer 10 2  #Timer Reset
     move timer 0     #Timer Reset
     jal CheckLights
-    jal CheckRoomPressure
     jal CheckRoomTemp
-    l mode dial Setting#Set Sign, then main
+    l mode modeDial Setting#Set Sign, then main
     beq mode 0 Alternate
     beq mode 1 Room
     beq mode 2 Tank
-    s sign Setting errorSignName#Sign failed to set
+    s modeSign Setting errorSignName#Sign failed to set
 CheckLights:
     lb daylight daylightSensor Activate Maximum
     beq daylight 0 LightsOn
@@ -85,33 +73,20 @@ CheckRoomTemp:
         s roomTempValve On 0
         j ra
 j ra
-CheckRoomPressure:#CRP
-    lb roomPressure gasSensor Pressure Minimum
-    lb ventOn activeVent On Minimum
-    #If Room Pressure is Not Good Skip turn off
-    brne roomPressure roomPressureStandard 5
-        brne ventOn 0 3 # Vent is Off Skip
-            sb activeVent On 0 #Turn vent off
-            s regulator On 0 #Turn reg off
-    j ra # Leave Room pressure is good
-#Room Pressure is not correct
-    sb activeVent On 1 #Turn vent on
-    s regulator On 1 #Turn vent on
-j ra
 Alternate:
     ble timer 4 Room
     bgt timer 4 Tank
 Room:
-    s sign Setting roomSignName
+    s modeSign Setting roomSignName
     lb roomPressure gasSensor Pressure Maximum
     lb roomTemperature gasSensor Temperature Maximum
-    s temperatureLED Setting roomTemperature
-    s pressureLED Setting roomPressure
+    s tempLED Setting roomTemperature
+    s pressLED Setting roomPressure
 j Main
 Tank:
-    s sign Setting tankSignName
+    s modeSign Setting tankSignName
     lb tankPressure tank Pressure Minimum
     lb tankTemperature tank Temperature Minimum
-    s temperatureLED Setting tankTemperature
-    s pressureLED Setting tankPressure
+    s tempLED Setting tankTemperature
+    s pressLED Setting tankPressure
 j Main

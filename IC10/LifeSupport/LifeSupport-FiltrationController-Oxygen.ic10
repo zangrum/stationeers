@@ -1,16 +1,19 @@
 define MaxPressure 40000
-define DesiredTemp 270
+define DesiredTemp 283
 define FlashingLight -1535893860
 define Tank 272136332 #
 define Pumps -321403609 # 
 define Heater -419758574 # 
 alias unit db
 alias moleSign d0
-alias temp r0
+alias tankTemp r0
 alias filterQuantity r1
 alias OutputPressure r2
 alias gasPresent r3
 alias moles r4
+alias filterSlotOccupied r5
+alias filterSlotQuantity r6
+alias tankPressure r7
 s moleSign Mode 13
 s moleSign On 11
 Main:
@@ -18,24 +21,12 @@ yield
 # Update Sign
 lb  moles Tank TotalMoles Maximum
 s moleSign Setting moles 
-# Check Filters
-move filterQuantity 0
-ls temp unit 0 Occupied 
-breq temp 0 3
-ls temp unit 0 Quantity 
-add filterQuantity filterQuantity temp
-ls temp unit 1 Occupied 
-breq temp 1 3
-ls temp unit 1 Quantity 
-add filterQuantity filterQuantity temp
-beq filterQuantity 0 NoFilter
-bltal filterQuantity 0.2 NeedFilter
-bgtal filterQuantity 0.9 FullFilter
-jal CheckInputGas
+
+jal CheckFilters
 jal CheckTemperature
-lb OutputPressure Tank Pressure Maximum
-blt OutputPressure MaxPressure Active
-bge OutputPressure MaxPressure Inactive
+jal CheckInputGas
+j CheckPressure
+
 j Main
 CheckInputGas:
 l gasPresent unit RatioOxygenInput
@@ -60,10 +51,29 @@ FullFilter:
 sb FlashingLight On 0
 j ra
 CheckTemperature:
-lb temp Tank Temperature Maximum
-sgt temp DesiredTemp temp
-breq temp 1 3 #Temp > desired temp , Skip to Off
+lb tankPressure Tank Pressure Maximum
+beq tankPressure 0 ra
+lb tankTemp Tank Temperature Maximum
+brgt tankTemp DesiredTemp 3 #Temp > desired temp , Skip to Off
 sb Heater On 1
 j ra
 sb Heater On 0
+j ra
+CheckPressure:
+lb OutputPressure Tank Pressure Maximum
+blt OutputPressure MaxPressure Active
+bge OutputPressure MaxPressure Inactive
+CheckFilters:
+move filterQuantity 0
+ls filterSlotOccupied unit 0 Occupied 
+breq filterSlotOccupied 0 3
+ls filterSlotQuantity unit 0 Quantity 
+add filterQuantity filterQuantity filterSlotQuantity
+ls filterSlotOccupied unit 1 Occupied 
+breq filterSlotOccupied 0 3
+ls filterSlotQuantity unit 1 Quantity 
+add filterQuantity filterQuantity filterSlotQuantity
+beq filterQuantity 0 NoFilter
+blt filterQuantity 0.2 NeedFilter
+bgt filterQuantity 0.9 FullFilter
 j ra
