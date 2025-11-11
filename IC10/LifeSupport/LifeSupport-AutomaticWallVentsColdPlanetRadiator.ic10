@@ -59,4 +59,3 @@ s acHotIntake On 0
 s acHotExhaust On 1
 s acLed Color ColorStopHeating
 j Main
-s ac

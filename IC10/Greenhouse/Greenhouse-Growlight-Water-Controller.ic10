@@ -1,0 +1,68 @@
+alias daylightSensor d0
+alias pipeAnalyzer d1
+alias gasSensor d2
+alias flashingLight d3
+alias pipeHeater d4
+
+alias angleOfSun r0
+alias pipeTemp r1
+alias pipeMols r3
+alias roomTemp r2
+alias activateGlowLights r4
+alias activatePipeHeater r5
+alias badRoomTemp r7
+alias badRoomPress r8
+alias badWaterLevel r9
+alias badWaterTemp r10
+alias activateAlarm r11
+alias lightsOn r12
+
+define growLights -1758710260 # Grow Light 
+
+s pipeHeater On 0
+s pipeHeater Lock 0
+s pipeAnalyzer On 1
+s pipeAnalyzer Lock 1
+s flashingLight On 0
+
+Main:
+yield
+jal CheckDaylight
+jal CheckWaterTemp
+jal CheckWaterLevel
+jal CheckRoomAir
+move activateAlarm 0
+or activateAlarm activateAlarm badRoomTemp
+or activateAlarm activateAlarm badRoomPress
+or activateAlarm activateAlarm badWaterLevel
+or activateAlarm activateAlarm badWaterTemp
+s flashingLight On activateAlarm
+j Main
+CheckDaylight:
+l angleOfSun daylightSensor Vertical
+sle activateGlowLights angleOfSun 112.5
+sb growLights On activateGlowLights
+j ra
+CheckWaterTemp:
+l pipeTemp pipeAnalyzer Temperature
+sgt badRoomTemp pipeTemp 40
+slt activatePipeHeater pipeTemp 283
+s pipeHeater On activatePipeHeater
+sgt badWaterTemp pipeTemp 320
+j ra
+CheckWaterLevel:
+l pipeMols pipeAnalyzer TotalMoles
+slt badWaterLevel pipeMols 3
+j ra
+CheckRoomAir:
+l roomTemp gasSensor Temperature
+slt badRoomTemp roomTemp 294
+beq badRoomTemp 1 ra
+sgt badRoomTemp roomTemp 303
+beq badRoomTemp 1 ra
+l roomTemp gasSensor Pressure
+slt badRoomPress roomTemp 52
+beq badRoomPress 1 ra
+sgt badRoomPress roomTemp 95
+beq badRoomPress 1 ra
+j ra

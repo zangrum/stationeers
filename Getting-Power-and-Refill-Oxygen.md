@@ -12,21 +12,25 @@ Your goal is to get the tank and the pressure regulator so you can fill your oxy
 [ ]    #     #    [ ]
 [ ]    #     F    [ ]
 ```
-*Mine: 78 Iron, 4 Gold, 25 Copper, 2 Silica, 100 Ice (Oxite)*
-* Door *(7 Iron, 3 Copper)*
+*Mine: 87 Iron, 5 Gold, 27 Copper, 2 Silica, 100 Ice (Oxite)*
+*Ingot: 86.5 Iron, 5 Gold, 27 Copper, 2 Silica*
+* 2X Kit(Door) (Manual Door) *(7 Iron, 3 Copper)*
   * 1X Iron Sheet *(1 Iron)*
 * Hydraulic Pipe Bender - *(20 Iron, 2 Gold, 10 Copper)*
   * 2X Iron Sheets *(2 Iron)*
   * 4X Copper Coils *(2 Copper)*
   * 2X Plastic Sheets *(2 Silica)*
-* Nitrogen Filter *(5 Iron)*
+* 2X Passive Vents *(3g Iron)*
+* Active Vent *(5g Iron, 1g Gold, 5g Copper)*  
 * 9X pipes *(0.5 Iron Each, (3 Iron))*
+* Nitrogen Filter *(5 Iron)*
 * 3X Kit(Pipe Utility Gas) *(5 Iron)*
-* Gas Canister (5 Iron)*
+* Gas Canister *(5 Iron)*
 * Ice Crusher *(3 Iron, 1 Gold, 1 Copper)*
   * 1X Iron Sheets *(1 Iron)* 
   * 2X Cable Coils *(0.5 Copper)*
 * Pressure Regulator *(5 Iron, 1 Gold, 2 Copper)*
+
 
 ```mermaid
 flowchart TD

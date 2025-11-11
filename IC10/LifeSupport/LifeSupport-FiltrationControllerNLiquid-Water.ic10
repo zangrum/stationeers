@@ -5,6 +5,7 @@ define Tank 272136332 #
 define Pumps -321403609 # 
 define Heater -419758574 # 
 define LiquidTank 608607718 #
+define LiquidPipeHeater -248475032
 alias unit db
 alias moleSign d0
 alias liquidMoleSign d1
@@ -16,6 +17,8 @@ alias moles r4
 alias filterSlotOccupied r5
 alias filterSlotQuantity r6
 alias tankPressure r7
+alias liquidTankPressure r8
+alias liquidTankTemp r9
 
 s moleSign Mode 13
 s moleSign On 11
@@ -32,6 +35,7 @@ s liquidMoleSign Setting moles
 
 jal CheckFilters
 jal CheckTemperature
+jal CheckLiquidTemperature
 jal CheckInputGas
 j CheckPressure
 
@@ -58,11 +62,20 @@ j ra
 FullFilter:
 sb FlashingLight On 0
 j ra
+CheckLiquidTemperature:
+lb liquidTankPressure LiquidTank Pressure Maximum
+beq liquidTankPressure 0 ra
+lb liquidTankTemp LiquidTank Temperature Maximum
+brgt liquidTankTemp DesiredTemp 3 #Temp > desired temp, Skip to Off
+sb LiquidPipeHeater On 1
+j ra
+sb LiquidPipeHeater On 0
+j ra
 CheckTemperature:
 lb tankPressure Tank Pressure Maximum
 beq tankPressure 0 ra
 lb tankTemp Tank Temperature Maximum
-brgt tankTemp DesiredTemp 3 #Temp > desired temp , Skip to Off
+brgt tankTemp DesiredTemp 3 #Temp > desired temp, Skip to Off
 sb Heater On 1
 j ra
 sb Heater On 0

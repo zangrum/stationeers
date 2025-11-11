@@ -14,27 +14,32 @@ We are going to take our 8 tile iron base, double its size and convert it to Ste
 ```
 
 **After**
-Composite Walls are now denoted by --- or |.  A: Autolathe, T: Tool Manufacture, E: Electronics Printer, P: Pipe Bender, I: Ice Machine& Water Bottle Filer, G: Gas Canister, B: Station Battery, S: Storage, G:Garden, K: Kitchen, F:Furnace, #:Floor, AC:Air Condition, R:Radiator, [ ]: Empty, APU: Power Controller, Battery Charger
+Composite Walls are now denoted by --- or |.  A: Autolathe, T: Tool Manufacture, E: Electronics Printer, P: Pipe Bender, I: Ice Machine& Water Bottle Filer, GC: Gas Canister, B: Station Battery, S: Storage, G:Garden, K: Kitchen, F:Furnace, #:Floor, AC:Air Condition, R:Radiator, [ ]: Empty, APU: Power Controller, Battery Charger
 ```
-[ ] ---   ---   ---   --- 
-[ ]| G     T     S     E |
-[ ]| G     P     #     A |
-[ ]| S     #     #     S |
-[ ]| K    APU    #     I |
-          ---   -D-   ---       
- R | AC    B   | AL    G | 
-    ---   ---   -D-   --- 
-[ ]  #     #     #     # 
-[ ]  #     #     F     # 
+[ ] ---   ---   ---   ---   --- 
+[ ]| A     S     P     S     G |
+[ ]| #     #     #     S     G |
+[ ]| E     #     T     K     # |
+[ ]| S     #     S     S     C |
+[ ]| K     #    APU    #     I |
+    -G-   -D-   ---   -G-   -G-       
+ R | AC |  AL    GC|   B     B  | 
+    ---   -D-   ---   ---   ---
+ #   #     #     #     #     # 
+ #   #     #     F     #     # 
 ```
-*Mine: 125 Iron, 41 Coal, 50g Copper, 25g Gold, 105g Silicon*
 
-*Ingots: 162 Steel, 50 Copper, 25 Gold, 72 Silicon*
-* 29X Steel Frames *(2g Steel each)*
-  * 58X Steel Sheets *(0.5 Steel each)*
-* 60X Composite Wall *(1g Steel)*
-  * 120X Plastic Sheets *(0.5g Silicon Ingot)*
-* 50X Heavy Coil *(25 Copper, 25 Gold)*
-* 50X Coil *(25 Copper)
+*Mine: 310g Iron, 100g Coal, 50g Copper, 25g Gold*
+*Ingots: 279g Steel, 90g Silicon, 50g Copper, 25g Gold, 6g Iron*
+* 43X Steel Frames *(2g Steel each)*
+  * 86X Steel Sheets *(0.5 Steel each)*
+* 60X Kit (Flat Wall) *(1g Steel each)*
+  * 60X Steel Sheets *(0.5 Steel each)*
+* 20X Composite Wall *(1g Steel each)*
+  * 20X Plastic Sheets *(0.5g Silicon Ingot each)*
+  * 20X Glass Sheets *(2g Silicon Ingot each)*
+* 6X Kit (Floor Grating) *(1g Iron each)*
+* 50X Heavy Coil *(25g Copper, 25g Gold)*
+* 50X Coil *(25g Copper)
 * 20X Insulated Pipes *(1g Silicon, 1g Steel)*
 * 20X Insulated Liquid Pipes *(1g Silicon, 1g Steel)*

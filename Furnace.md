@@ -11,7 +11,7 @@ Okay its time to start working your way up the tech tree.  First expand your dec
 [ ]   [ ]   [ ]   [ ]
 [ ]   [ ]    V    [ ]   
 ```
-*Mine: 52g Iron, 12g Copper*
+*Mine: 52g Iron, 12g Copper, 50 Ice (Oxite), 50 Ice (Volatiles)*
 * Furnace *(30g Iron, 10g Copper)*
     * 4X Iron Sheets *(1g Iron each, (4 Iron))*
 * 3X Iron Frames *(4g Iron each, (12 Iron))*

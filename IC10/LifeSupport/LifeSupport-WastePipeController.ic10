@@ -1,0 +1,53 @@
+alias InAnalyzer d0
+alias InPump d1
+alias FilAnalyzer d2
+alias TankPump d3
+alias Tank d4
+alias FilReg d5
+define MinimumTemp 296
+define MaximumTemp 300
+define DesiredTemp 298
+define MaximumPres 50000
+define ActivatePres 0.0001
+
+define ActiveVent -1129453144
+define GasSensor -1252983604
+alias temp r0
+alias ventsOn r1
+alias inputPressure r2
+alias tankPressure r3
+alias filterPressure r4
+alias inputPumpActivate r5
+alias tankPumpActivate r6
+alias pressRegActivate r7
+
+s FilReg Setting MaximumPres
+s InAnalyzer On 1
+s FilAnalyzer On 1
+s TankPump On 0
+s InPump On 0
+s FilReg On 1
+
+Main:
+yield
+jal CheckRoomTemp
+l inputPressure InAnalyzer Pressure
+l filterPressure FilAnalyzer Pressure
+l tankPressure Tank Pressure
+sgt pressRegActivate filterPressure MaximumPres
+sge inputPumpActivate inputPressure ActivatePres
+sgt tankPumpActivate tankPressure ActivatePres
+s InPump On inputPumpActivate
+s FilReg On pressRegActivate
+brne pressRegActivate 0 2
+s TankPump On tankPumpActivate
+j Main
+
+CheckRoomTemp:
+lb temp GasSensor Temperature Maximum
+brgt temp MinimumTemp 3
+sb ActiveVent On 0
+j ra
+brlt temp MaximumTemp 2
+sb ActiveVent On 1
+j ra
