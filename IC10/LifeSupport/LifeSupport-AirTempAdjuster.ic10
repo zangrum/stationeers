@@ -1,0 +1,70 @@
+#Air Temp Adjuster
+alias InputRegulator d0
+alias OutputRegulator d1
+alias AdjustAnalyzer d2
+alias OutputAnalyzer d3
+define PipeHeater 	-419758574
+define MaxPressure 40000
+define FillPressure 2000
+define MinReqTemp 292
+define MaxReqTemp 295
+
+alias adjustPressure r0
+alias adjustTemperature r1
+alias adjustLiquid r3
+alias outputPressure r4
+alias shouldFill r5
+alias shouldHeat r6
+alias shouldCool r6
+alias shouldOutput r8
+
+s AdjustAnalyzer On 1
+s OutputAnalyzer On 1
+move shouldFill 0
+move shouldHeat 0
+move shouldCool 0
+move shouldOutput 0
+Main:
+yield
+l outputPressure OutputAnalyzer Pressure
+bgt outputPressure MaxPressure AllOff
+bnez shouldOutput Outputting
+
+s AdjustAnalyzer On 1
+l adjustPressure AdjustAnalyzer Pressure
+l adjustTemperature AdjustAnalyzer Temperature
+l adjustLiquid AdjustAnalyzer VolumeOfLiquid
+sle adjustLiquid adjustLiquid 0.001
+sle adjustPressure adjustPressure FillPressure
+and shouldFill adjustLiquid adjustPressure
+bnez shouldFill Filling
+#sgt shouldCool adjustTemperature MaxReqTemp 
+slt shouldHeat adjustTemperature MinReqTemp
+bnez shouldHeat Heating
+sgt shouldOutput adjustTemperature MinReqTemp  
+bnez shouldOutput Outputting
+
+j Main
+Filling:
+s OutputRegulator On 0
+s InputRegulator On 1
+sb PipeHeater On 1
+j Main
+Heating:
+s OutputRegulator On 0
+s InputRegulator On 0
+sb PipeHeater On 1
+j Main
+Outputting:
+s OutputRegulator On 1
+s InputRegulator On 0
+sb PipeHeater On 0
+l adjustPressure AdjustAnalyzer Pressure
+sgt shouldOutput adjustPressure 0.1
+j Main
+AllOff:
+s AdjustAnalyzer On 0
+s OutputRegulator On 0
+s InputRegulator On 0
+sb PipeHeater On 0
+j Main

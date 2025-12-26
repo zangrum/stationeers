@@ -1,0 +1,97 @@
+# AdvancedFurnace-Room2Setup.ic10
+define ActiveVent -1129453144
+alias LED d0
+alias Dial d1
+alias Lever d2
+alias Pump d3
+alias Valve d4
+alias InputVent d5
+define NONE $4E4F4E45
+define INPUT $494E505554
+define OUTPUT $4F5554505554
+define FILL $46494C4C
+define ModeNone 0
+define ModeInput 1
+define ModeOutput 2
+define ModeFill 3
+
+alias currentSelection r1
+alias dialValue r2
+alias leverValue r3
+
+move currentSelection -1
+s LED On 1
+s LED Setting NONE
+s LED Mode 10
+s LED Color Color.Red
+s Dial Mode 3
+s Dial Setting 0
+s InputVent Mode 1 #Inward
+s InputVent PressureExternal 0
+s InputVent PressureInternal 35000
+jal Reset
+
+Main:
+    yield
+    l dialValue Dial Setting
+    beq currentSelection dialValue CheckLever
+    jal Reset
+    move currentSelection dialValue
+    beqal currentSelection ModeNone SetNone
+    beqal currentSelection ModeInput SetInput
+    beqal currentSelection ModeOutput SetOutput
+    beqal currentSelection ModeFill SetFill
+j Main
+CheckLever:
+    l leverValue Lever Open
+    beq currentSelection ModeNone LeverNone
+    beq currentSelection ModeInput LeverInput
+    beq currentSelection ModeOutput LeverOutput
+    beq currentSelection ModeFill LeverFill
+j Main
+LeverNone:
+    s LED Color Color.Red
+    s Lever Open 0
+j Main
+LeverInput:
+    breq leverValue 0 4
+        s LED Color Color.Green
+        s Valve On 1
+        j Main
+    s LED Color Color.Red
+    s Valve On 0
+j Main
+LeverOutput: 
+    breq leverValue 0 4
+        s LED Color Color.Green
+        s Pump On 1
+        j Main
+    s LED Color Color.Red
+    s Pump On 0
+j Main
+LeverFill:
+    breq leverValue 0 4
+        s LED Color Color.Green
+        s InputVent On 1
+        j Main
+    s LED Color Color.Red
+    s InputVent On 0
+j Main
+Reset:
+s Lever Open 0
+s Pump On 0
+s Valve On 0
+s InputVent On 0
+j ra
+SetNone:
+s LED Setting NONE
+j ra
+SetInput:
+s LED Setting INPUT
+j ra
+SetOutput:
+s LED Setting OUTPUT
+j ra
+SetFill:
+s LED Setting FILL
+j ra

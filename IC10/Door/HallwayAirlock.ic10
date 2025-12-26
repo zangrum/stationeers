@@ -1,0 +1,102 @@
+define MAX_TIME 10
+alias ThisHallway db
+alias DoorA d0
+alias DoorB d1
+alias DoorC d2
+alias DoorD d3
+alias Occupancy d4
+alias OtherHallway d5
+alias doorAPress r0
+alias doorBPress r1
+alias doorCPress r2
+alias doorDPress r3
+alias occupied r4
+alias timer r5
+alias otherHallwayInUse r6
+s DoorA Open 0
+s DoorA On 1
+s DoorA Mode 1
+s DoorB Open 0
+s DoorB On 1
+s DoorB Mode 1
+s DoorC Open 0
+s DoorC On 1
+s DoorC Mode 1
+s DoorD Open 0
+s DoorD On 1
+s DoorD Mode 1
+move doorAPress 0
+move doorBPress 0
+move doorCPress 0
+move doorDPress 0
+move occupied 0
+move timer 0
+Main:
+yield
+l occupied Occupancy Activate
+beq 1 occupied Inside
+brdns OtherHallway 3
+l otherHallwayInUse OtherHallway Setting
+beq 1 otherHallwayInUse Close
+l doorAPress DoorA Setting
+s DoorA Setting 0
+l doorBPress DoorB Setting
+s DoorB Setting 0
+brdns DoorC 3
+l doorCPress DoorC Setting
+s DoorC Setting 0
+brdns DoorD 3
+l doorDPress DoorD Setting
+s DoorD Setting 0
+beq 1 doorAPress OpenDoorA
+beq 1 doorBPress OpenDoorB
+beq 1 doorCPress OpenDoorC
+beq 1 doorDPress OpenDoorD
+add timer timer 1
+bgt timer MAX_TIME Close
+beqz occupied Close
+j Main
+Inside:
+s db Setting 1
+s DoorA Open 0
+s DoorB Open 0
+s DoorC Open 0
+s DoorD Open 0
+move timer 0
+j Main
+Close:
+s db Setting 0
+s DoorA Open 0
+s DoorB Open 0
+s DoorC Open 0
+s DoorD Open 0
+move timer 0
+j Main
+OpenDoorA:
+s DoorA Open 1
+s DoorB Open 0
+s DoorC Open 0
+s DoorD Open 0
+s db Setting 1
+move timer 0
+OpenDoorB:
+s DoorA Open 0
+s DoorB Open 1
+s DoorC Open 0
+s DoorD Open 0
+s db Setting 1
+move timer 0
+OpenDoorC:
+s DoorA Open 0
+s DoorB Open 0
+s DoorC Open 1
+s DoorD Open 0
+s db Setting 1
+move timer 0
+OpenDoorD:
+s DoorA Open 0
+s DoorB Open 0
+s DoorC Open 0
+s DoorD Open 1
+s db Setting 1
+move timer 0

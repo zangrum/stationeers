@@ -1,0 +1,42 @@
+# Define aliases for connected devices
+alias VendingMachine d0
+alias ItemHashMemory d1
+alias DispenseButton d2
+alias QuantityMemory d3 # Optional, stores the number of items to dispense
+
+# Define constants (example hash for Iron Ingot)
+define HASH_IRON_INGOT -443130773 # You can get actual hashes from the wiki or in-game
+
+main:
+    # Read the state of the button
+    l r0 DispenseButton On
+    # Check if the button is off (0) or the process is complete
+    beqz r0 main 
+
+    # Read the desired item hash and quantity from memory chips
+    l r1 ItemHashMemory Setting # r1 holds the hash of the item to request
+    l r2 QuantityMemory Setting # r2 holds the remaining quantity to dispense
+
+loop:
+    # Check if we still need to dispense items
+    beqz r2 end 
+
+    # Request one item by setting the Vending Machine's RequestHash parameter
+    s VendingMachine RequestHash r1
+    
+    # Wait for one game tick. This is crucial for single-item dispensing
+    yield 
+
+    # Decrement the quantity counter
+    sub r2 r2 1
+    # Store the remaining quantity back to the Quantity Memory (optional)
+    s QuantityMemory Setting r2
+
+    # Loop back to dispense the next item
+    j loop
+
+end:
+    # Reset the button (if it's a toggle switch)
+    s DispenseButton On 0 # Set button to off state
+    # Jump back to main loop to wait for the next request
+j main

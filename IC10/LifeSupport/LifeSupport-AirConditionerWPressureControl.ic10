@@ -1,0 +1,27 @@
+alias Pump d0
+alias GasSensor d1
+define OccSensor 322782515
+define Transformer -890946730
+define MinPressure 55
+define DesiredPressure 75
+define MaxPressure 95
+alias roomPressure r0
+alias onOff r1
+
+Main:
+yield
+jal CheckLights
+l roomPressure GasSensor Pressure
+blt roomPressure MinPressure SetOff
+bgt roomPressure MaxPressure SetOn
+blt roomPressure DesiredPressure SetOff
+SetOff:
+s Pump On 0
+j Main
+SetOn:
+s Pump On 1
+j Main
+CheckLights:
+lb onOff OccSensor Activate Minimum
+sb Transformer On onOff
+j ra

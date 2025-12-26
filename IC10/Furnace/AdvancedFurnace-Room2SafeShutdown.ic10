@@ -1,0 +1,99 @@
+define BackPressureRegulator -1149857558
+define FlashingLights -1535893860
+define PipeAnalyzer 435685051
+define VolumePump -321403609
+define DigitalValve -1280984102
+define AdvancedFurnace 545937711
+define LedDisplay -815193061
+define Console 235638270
+define WallLight 555215790
+define LED 1944485013
+define ModeOff 0
+define ModeOn 1
+alias Lever d0
+alias ColdController d1
+alias HotController d2
+alias RoomGasSensor d4
+alias RoomPump d5
+alias activeMode r0
+alias currentSelection r1
+alias maxPressure r2
+alias furnacePress r3
+alias roomPressure r4
+alias pumpOnOff r6
+s RoomPump On 0
+sb LED Color Color.Brown
+sb LED On 1
+s db Setting -1
+s Lever Open 0
+sb PipeAnalyzer On 1
+
+Main:
+    yield
+    jal CheckRoomPressure
+    l currentSelection Lever Open
+    l activeMode db Setting
+    beq currentSelection ModeOff PowerOff
+    beq currentSelection ModeOn PowerOn
+PowerOff:
+    beq activeMode 0 Main
+    lb maxPressure PipeAnalyzer Pressure Maximum
+    lb furnacePress AdvancedFurnace Pressure Maximum
+    add maxPressure maxPressure furnacePress
+    bge maxPressure 0.001 StartShuttingDown
+    blt maxPressure 0.001 Shutdown
+j Main
+PowerOn:
+    beq activeMode 1 Main
+    s ColdController On 1
+    s HotController On 1
+    sb WallLight On 1
+    sb FlashingLights On 0
+    sb LedDisplay On 1
+    sb Console On 1
+    sb AdvancedFurnace On 1
+    sb BackPressureRegulator On 1
+    sb BackPressureRegulator Setting 51000
+    sb LED Color Color.Green
+    s db Setting 1
+j Main    
+StartShuttingDown:
+    beq activeMode 2 ShuttingDown
+    sb FlashingLights On 1
+    sb LED Color Color.Orange
+    sb DigitalValve On 0
+    sb VolumePump On 0
+    s ColdController On 0
+    s HotController On 0
+    sb LedDisplay On 1
+    sb Console On 1    
+    s db Setting 2
+j Main    
+ShuttingDown:
+    sb LED Color Color.Yellow
+    sb BackPressureRegulator On 1
+    sb BackPressureRegulator Setting 0
+    sb AdvancedFurnace On 1
+    sb AdvancedFurnace SettingInput 0
+    sb AdvancedFurnace SettingOutput 100    
+j Main
+Shutdown:
+    sb LED Color Color.Red
+    sb WallLight On 0
+    sb DigitalValve On 0
+    sb VolumePump On 0
+    s ColdController On 0
+    s HotController On 0
+    sb LedDisplay On 0
+    sb Console On 0    
+    sb BackPressureRegulator On 0
+    sb AdvancedFurnace SettingOutput 0
+    sb AdvancedFurnace On 0
+    sb FlashingLights On 0
+    s db Setting 0
+j Main
+CheckRoomPressure:
+    l roomPressure RoomGasSensor Pressure
+    sgt pumpOnOff roomPressure 150
+    s RoomPump On pumpOnOff
+j ra

@@ -1,0 +1,38 @@
+alias DoorA d0
+alias DoorB d1
+alias Occupancy d2
+alias doorAOpen r0
+alias doorBOpen r1
+alias occupied r2
+alias reset r3
+alias buttonAActive r4
+alias buttonBActive r5
+s DoorA Open 1
+s DoorA On 1
+s DoorA Mode 1
+s DoorB Open 0
+s DoorB On 1
+s DoorB Mode 1
+move reset 0
+Main:
+yield
+l buttonAActive DoorA Setting
+s DoorA Setting 0
+l buttonBActive DoorB Setting
+s DoorB Setting 0
+l occupied Occupancy Activate
+or occupied occupied buttonAActive
+or occupied occupied buttonBActive
+beqz occupied Empty
+beqz reset Flip
+j Main
+Empty:
+move reset 0
+j Main
+Flip:
+move reset 1
+l doorAOpen DoorA Open
+l doorBOpen DoorB Open
+s DoorA Open doorBOpen
+s DoorB Open doorAOpen
+j Main

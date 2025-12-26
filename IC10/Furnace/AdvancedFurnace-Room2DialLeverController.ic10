@@ -1,0 +1,78 @@
+# AdvancedFurnace-Room2Setup.ic10
+alias LED d0
+alias Dial d1
+alias Lever d2
+alias Pump d3
+alias Valve d4
+define NONE $4E4F4E45
+define INPUT $494E505554
+define OUTPUT $4F5554505554
+define ModeNone 0
+define ModeInput 1
+define ModeOutput 2
+define ModeFill 3
+
+alias currentSelection r1
+alias dialValue r2
+alias leverValue r3
+
+move currentSelection -1
+s LED On 1
+s LED Setting NONE
+s LED Mode 10
+s LED Color Color.Red
+s Dial Mode 2
+s Dial Setting 0
+
+jal Reset
+
+Main:
+    yield
+    l dialValue Dial Setting
+    beq currentSelection dialValue CheckLever
+    jal Reset
+    move currentSelection dialValue
+    beqal currentSelection ModeNone SetNone
+    beqal currentSelection ModeInput SetInput
+    beqal currentSelection ModeOutput SetOutput
+j Main
+CheckLever:
+    l leverValue Lever Open
+    beq currentSelection ModeNone LeverNone
+    beq currentSelection ModeInput LeverInput
+    beq currentSelection ModeOutput LeverOutput
+j Main
+LeverNone:
+    s LED Color Color.Red
+    s Lever Open 0
+j Main
+LeverInput:
+    breq leverValue 0 4
+        s LED Color Color.Green
+        s Valve On 1
+        j Main
+    s LED Color Color.Red
+    s Valve On 0
+j Main
+LeverOutput: 
+    breq leverValue 0 4
+        s LED Color Color.Green
+        s Pump On 1
+        j Main
+    s LED Color Color.Red
+    s Pump On 0
+j Main
+Reset:
+s Lever Open 0
+s Pump On 0
+s Valve On 0
+j ra
+SetNone:
+s LED Setting NONE
+j ra
+SetInput:
+s LED Setting INPUT
+j ra
+SetOutput:
+s LED Setting OUTPUT
+j ra
